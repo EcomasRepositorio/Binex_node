@@ -10,7 +10,7 @@ const fs = require('fs');
 // File upload configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'PDF_ECOMAS/'); // The folder where PDFs will be saved on the server
+    cb(null, 'PDF_BINEX/'); // The folder where PDFs will be saved on the server
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -19,20 +19,24 @@ const storage = multer.diskStorage({
   },
 });
 
-router.use('/server/pdf', express.static('PDF_ECOMAS/'));
+router.use('/server/pdf', express.static('PDF_BINEX/'));
 
 const upload = multer({ storage: storage });
+
 
 
 router.get("/server/students", (req, res) => {
   conexion.query("SELECT * FROM participantes", (error, results) => {
     if (error) {
-      throw error;
+      console.error('Error en la consulta SQL:', error);
+      res.status(500).send({ error: 'Error en la consulta SQL' });
     } else {
       res.send({ results: results });
     }
   });
 });
+
+
 
 
 router.post('/server/students/save', upload.single('PDF'), async (req, res) => {
@@ -139,7 +143,7 @@ router.delete("/server/students/delete/:codigo",(req, res) => {
 
 
 cron.schedule('* * * * *', () => {
-  const directory = 'IMG_BANNER_ECOMAS/';
+  const directory = 'IMG_BANNER_BINEX/';
   const thresholdTime = 30 * 24 * 60 * 60 * 1000; // Un mes en milisegundos
 
   fs.readdir(directory, (err, files) => {
@@ -186,12 +190,12 @@ router.get("/server/forms", (req, res) => {
   });
 });
 
-router.use('/server/img', express.static('IMG_BANNER_ECOMAS'));
+router.use('/server/img', express.static('IMG_BANNER_BINEX'));
 
 
 const storageImg = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "IMG_BANNER_ECOMAS/"); // The folder where the images will be stored
+    cb(null, "IMG_BANNER_BINEX/"); // The folder where the images will be stored
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
