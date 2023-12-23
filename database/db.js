@@ -3,7 +3,7 @@ const conexion = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
     password : 'root',
-    database : 'binex_db'  
+    database : 'Binex_db'  
 });
 conexion.connect((error)=>{
     if (error) {
