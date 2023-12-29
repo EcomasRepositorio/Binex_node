@@ -12,8 +12,8 @@ app.use(express.static('public'));
 app.use('/pdfs', express.static(path.join(__dirname, 'PDF_BINEX')));
 
 // Configuración de certificado y clave
-const certificatePath = './certificate.pem';
-const privateKeyPath = './private-key.pem';
+const certificatePath = path.resolve(__dirname, 'certificate.pem');
+const privateKeyPath = path.resolve(__dirname, 'private-key.pem');
 const credentials = {
   key: fs.readFileSync(privateKeyPath),
   cert: fs.readFileSync(certificatePath),
