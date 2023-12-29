@@ -1,18 +1,27 @@
 const express = require('express');
 const cors = require('cors');
-const http = require('http'); // Cambio de 'https' a 'http'
+const https = require('https');
+const fs = require('fs');
 const app = express();
 const path = require('path');
 
 app.use(express.json());
-app.use(cors()); 
+app.use(cors());
 app.use('/', require('./router'));
 app.use(express.static('public'));
 app.use('/pdfs', express.static(path.join(__dirname, 'PDF_BINEX')));
 
-// Crear servidor HTTP en lugar de HTTPS
-const httpServer = http.createServer(app);
+// Configuración de certificado y clave
+const certificatePath = './certificate.pem';
+const privateKeyPath = './private-key.pem';
+const credentials = {
+  key: fs.readFileSync(privateKeyPath),
+  cert: fs.readFileSync(certificatePath),
+};
 
-httpServer.listen(4000, () => {
-  console.log('HTTP SERVER Running in http://localhost:4000'); // Actualización del mensaje
+// Crear servidor HTTPS en el puerto 443
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(443, () => {
+  console.log('HTTPS SERVER Running in https://localhost:443');
 });
