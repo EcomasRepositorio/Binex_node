@@ -22,6 +22,6 @@ const credentials = {
 // Crear servidor HTTPS en el puerto 443
 const httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(3000, () => {
-  console.log('HTTPS SERVER Running in https://localhost:3000');
+httpsServer.listen(6000, () => {
+  console.log('HTTPS SERVER Running in https://localhost:6000');
 });
