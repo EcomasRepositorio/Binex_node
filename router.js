@@ -29,12 +29,13 @@ router.get("/server/students", (req, res) => {
   conexion.query("SELECT * FROM participantes", (error, results) => {
     if (error) {
       console.error('Error en la consulta SQL:', error);
-      res.status(500).send({ error: 'Error en la consulta SQL' });
+      res.status(500).json({ error: 'Error en la consulta SQL' });
     } else {
-      res.send({ results: results });
+      res.json({ results: results });  // Usar res.json en lugar de res.send
     }
   });
 });
+
 
 
 

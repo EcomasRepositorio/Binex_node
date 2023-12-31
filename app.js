@@ -6,7 +6,14 @@ const app = express();
 const path = require('path');
 
 app.use(express.json());
-app.use(cors());
+
+// Habilitar CORS para todas las solicitudes
+app.use(cors({
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,  // Habilitar credenciales (cookies, encabezados, etc.)
+}));
+
 app.use('/', require('./router'));
 app.use(express.static('public'));
 app.use('/pdfs', express.static(path.join(__dirname, 'PDF_BINEX')));
