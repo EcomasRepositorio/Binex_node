@@ -1,0 +1,74 @@
+import { Post, User } from "@prisma/client";
+import { prisma } from "../utils/prisma.server";
+import { createPostPick, updatePostPick } from "../utils/format.server";
+
+export class postService {
+  static async getAll ( take: number, skip: number ) {
+    try {
+      const result = await prisma.post.findMany({
+        orderBy: { createdAt: "desc" },
+        take,
+        skip,
+        select: {
+          id: true,
+          description: true,
+          createdAt: true,
+          author: {
+            select: {
+            }
+          }
+        },
+      })
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async create ({ description, image, authorId }: createPostPick) {
+    try {
+      const result = await prisma.post.create({
+        data: {
+          description,
+          image,
+          author: { connect: { id: authorId } },
+        }
+      })
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async update(id: Post["id"],
+  { description }: updatePostPick
+  ) {
+    try {
+      const result = await prisma.post.update({
+        where: { id },
+        data: {
+          description,
+        },
+        select: {
+          id: true,
+          description: true,
+          authorId: true,
+        }
+      })
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async delete(id: Post["id"]) {
+    try {
+      const result = await prisma.post.delete({
+        where: { id }
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
