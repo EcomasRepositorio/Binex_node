@@ -1,4 +1,4 @@
-import { User, Post, Student, Prisma } from "@prisma/client"
+import { User, Post, Student, Prisma, Role } from "@prisma/client"
 
 export type userPick = Pick<
   User,
@@ -10,8 +10,10 @@ export type loginPick = Pick<
 
 export type createPostPick = Pick<
   Post,
+  | "title"
   | "description"
   | "image"
+  | "createdAt"
   | "authorId"
 >;
 
@@ -25,6 +27,7 @@ export type updateUserPick = Pick<
 
 export type updatePostPick = Pick<
   Post,
+  | "title"
   | "description"
   | "image"
   | "authorId"
@@ -33,12 +36,12 @@ export type updatePostPick = Pick<
 
 export type updateStudentPick = Pick<
   Student,
-  | "DNI"
+  | "documentNumber"
   | "name"
   | "code"
   | "activityAcademy"
   | "participation"
-  | "Institute"
+  | "institute"
   | "hour"
   | "date"
 >;
@@ -48,9 +51,25 @@ export type paginationInfo = {
   offset: number;
 }
 
+export type userInfo = {
+  id: number;
+  email: string;
+  password?: string;
+  role: Role;
+  iat: number;
+}
+
 export type errorProp = {
   errorDescription?: Prisma.PrismaClientKnownRequestError | any;
   errorContent?: string;
   status: number;
   message: string;
 };
+
+export type Payload = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+

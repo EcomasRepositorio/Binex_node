@@ -12,11 +12,11 @@ export const showAllPosts = async (
     const { limit, offset } = res.locals as paginationInfo;
       const result = await postService.getAll(limit, offset)
       res.status(200).json(result);
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+  } catch (error) {
       next({
         status: 400,
         message: 'Error: Insert valid Id',
-        errorContent: error.clientVersion
+        errorContent: ''
       })
   }
 };

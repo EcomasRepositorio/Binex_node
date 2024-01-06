@@ -1,11 +1,11 @@
-node_modules/
-package-lock.json/
+node_modules
+package-lock.json
 database
 IMG_BANNER_BINEX
 PDF_BINEX
-/app.json
+app.json
 dbmysql.txt
 importExcel.js
-/router.js
+router.js
 .env
 

@@ -10,15 +10,15 @@ export class studentServices {
         take,
         skip,
           select: {
-            DNI: true,
+            documentNumber: true,
             name: true,
             code: true,
             activityAcademy: true,
             participation: true,
-            Institute: true,
+            institute: true,
             hour: true,
             date: true,
-            pdf: true,
+            imageCertificate: true,
           }
       });
       return result;
@@ -32,39 +32,41 @@ export class studentServices {
       const result = await prisma.student.findFirst({
         where: { code },
         select: {
-          DNI: true,
+          documentNumber: true,
           name: true,
           code: true,
           activityAcademy: true,
           participation: true,
-          Institute: true,
+          institute: true,
           hour: true,
           date: true,
-          pdf: true,
+          imageCertificate: true,
         }
       });
+      if (!result) return null;
       return result;
     } catch ( error ) {
       throw error;
     }
   }
 
-  static async searchDNI(DNI: Student["DNI"]) {
+  static async searchDNI(documentNumber: Student["documentNumber"]) {
     try {
-      const result = await prisma.student.findFirst({
-        where: { DNI },
+      const result = await prisma.student.findMany({
+        where: { documentNumber },
         select: {
-          DNI: true,
+          documentNumber: true,
           name: true,
           code: true,
           activityAcademy: true,
           participation: true,
-          Institute: true,
+          institute: true,
           hour: true,
           date: true,
-          pdf: true,
+          imageCertificate: true,
         }
       });
+      if (!result) return false;
       return result;
     } catch ( error ) {
       throw error;
@@ -73,19 +75,23 @@ export class studentServices {
 
   static async searchName(name: Student["name"]) {
     try {
-      const result = await prisma.student.findFirst({
-        where: { name },
+      const result = await prisma.student.findMany({
+        where: {
+          name: { contains: name.toLowerCase() },
+        },
+        orderBy: { name: "asc" },
         select: {
-          DNI: true,
+          documentNumber: true,
           name: true,
           code: true,
           activityAcademy: true,
           participation: true,
-          Institute: true,
+          institute: true,
           hour: true,
           date: true,
-          pdf: true,
-        }
+          imageCertificate: true,
+        },
+        take: 15
       });
       return result;
     } catch ( error ) {
@@ -96,27 +102,27 @@ export class studentServices {
   static async create( data: Student ) {
     try {
       const {
-        DNI,
+        documentNumber,
         name,
         code,
         activityAcademy,
         participation,
-        Institute,
+        institute,
         hour,
         date,
-        pdf,
+        imageCertificate,
       } = data;
       const result = await prisma.student.create({
         data: {
-          DNI,
+          documentNumber,
           name,
           code,
           activityAcademy,
           participation,
-          Institute,
+          institute,
           hour,
           date,
-          pdf,
+          imageCertificate,
         }
       });
       return result;

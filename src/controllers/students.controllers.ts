@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Student } from '@prisma/client';
 import { NextFunction, Request, Response } from "express";
 import { studentServices } from "../services/students.services";
-import { paginationInfo } from "../utils/format.server";
+import { paginationInfo, Payload, userInfo } from '../utils/format.server';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const showAllStudents = async (
@@ -24,18 +24,29 @@ export const showStudentCode = async (
   next: NextFunction,
 ) => {
   try {
-    let { search } = req.query
-    if (typeof search === "string") {
-      const result = await studentServices.searchCode(search)
-        res.json(result)
+    let { code } = req.params
+    const convertCode = parseInt(code)
+    if (typeof convertCode  ===  "number" && convertCode >= 0) {
+      const result = await studentServices.searchCode(convertCode);
+      if (result == null) {
+        next ({
+          errorDescription: "Error,",
+          status: 400,
+          message: "Error, No se puedo encontrar la lista",
+          errorContent: "Error,"
+        })
+      } else {
+        res.status(200).json(result)
+      }
     } else {
-      res.status(400).json({ error: search })
+        res.status(400).json({ error: convertCode })
     }
 } catch (error) {
+  //console.log(error)
   next ({
     errorDescription: error,
     status: 404,
-    message: "Error, No se puedo encontrar la lista",
+    message: "Error, No se puedo encontrar la lista code",
     errorContent: "Error,"
   })
   }
@@ -47,18 +58,31 @@ export const showStudentDNI = async (
   next: NextFunction,
 ) => {
   try {
-    let { search } = req.query
-    if (typeof search  ===  "string") {
-      const result = await studentServices.searchDNI(search)
-        res.json(result)
+    let { DNI } = req.params
+    console.log(req.params)
+    const convertDNI = parseInt(DNI)
+    console.log(convertDNI)
+    if (typeof convertDNI  ===  "number" && convertDNI >= 0) {
+      const result = await studentServices.searchDNI(convertDNI);
+      console.log(result)
+      /* if (result == null) {
+        next ({
+          errorDescription: "Error,",
+          status: 400,
+          message: "Error, No se puedo encontrar la lista",
+          errorContent: "Error,"
+        })
+      } else {} */
+        res.status(200).json(result)
     } else {
-        res.status(400).json({ error: search })
+        res.status(400).json({ error: convertDNI })
     }
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error)
     next ({
       errorDescription: error,
       status: 404,
-      message: "Error, No se puedo encontrar la lista",
+      message: "Error, Invalid DNI",
       errorContent: "Error,"
     })
   }
@@ -70,21 +94,28 @@ export const showStudentName = async (
     next: NextFunction,
   ) => {
     try {
-      let { search } = req.query
-      if (typeof search  ===  "string") {
-        const result = await studentServices.searchName(search)
-          res.json(result)
-      } else {
-          res.status(400).json({ error: search })
+      let { name } = req.params;
+      console.log(req.params)
+        if (typeof name === "string" && name.trim() !== "") {
+        const result = await studentServices.searchName(name.trim());
+        console.log(result)
+        if (result.length > 0) {
+          res.status(200).json(result)
+        } else {
+          res.status(404).json({ message: 'Error: Incorrect name'})
+        }
+        } else {
+          res.status(400).json({ error: 'error' })
+        }
+      } catch (error) {
+        console.log(error)
+        next ({
+          errorDescription: error,
+          status: 400,
+          message: "Error, No se puedo encontrar la lista name",
+          errorContent: "Error,"
+        })
       }
-    } catch (error) {
-      next ({
-        errorDescription: error,
-        status: 404,
-        message: "Error, No se puedo encontrar la lista",
-        errorContent: "Error,"
-      })
-    }
   };
 
 export const createStudent = async (
@@ -97,7 +128,7 @@ export const createStudent = async (
     const result = await studentServices.create(body)
     res.status(201).json(result)
   } catch (error) {
-    console.log(error);
+    //console.log(error);
   }
 };
 
@@ -122,7 +153,7 @@ export const updateStudent = async (
     }
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(error);
+      //console.log(error);
     }
   }
 };
@@ -140,15 +171,15 @@ export const deleteStudent = async (
         res.status(200).json({ id: result.id });
     } else {
         next({
-        errorDescription: convertId,
-        status: 400,
-        message: "Error, Insert a valid Id",
-        errorContent: "Error, Invalid id for user",
+          errorDescription: convertId,
+          status: 400,
+          message: "Error, Insert a valid Id",
+          errorContent: "Error, Invalid id for user",
         })
       }
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
-        console.log(error);
+        //console.log(error);
       }
   }
 }

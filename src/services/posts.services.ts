@@ -11,10 +11,14 @@ export class postService {
         skip,
         select: {
           id: true,
+          title: true,
           description: true,
           createdAt: true,
           author: {
             select: {
+              id: true,
+              firstName: true,
+              lastName: true,
             }
           }
         },
@@ -25,12 +29,14 @@ export class postService {
     }
   }
 
-  static async create ({ description, image, authorId }: createPostPick) {
+  static async create ({ title, description, image, createdAt, authorId }: createPostPick) {
     try {
       const result = await prisma.post.create({
         data: {
+          title,
           description,
           image,
+          createdAt,
           author: { connect: { id: authorId } },
         }
       })
@@ -41,16 +47,18 @@ export class postService {
   }
 
   static async update(id: Post["id"],
-  { description }: updatePostPick
+  { title, description }: updatePostPick
   ) {
     try {
       const result = await prisma.post.update({
         where: { id },
         data: {
+          title,
           description,
         },
         select: {
           id: true,
+          title: true,
           description: true,
           authorId: true,
         }

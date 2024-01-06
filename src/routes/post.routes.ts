@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { showAllPosts, createPost, updatePost, deletePost } from "../controllers/posts.controllers";
+import { pagination } from "../utils/pagination.server";
+import { adminRole } from "../middlewares/role.middlewares";
+import { authenticate } from "../middlewares/auth.middlewares";
 
 export const postRoute = Router();
 
