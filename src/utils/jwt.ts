@@ -12,7 +12,7 @@ if (!accessTokenSecret) {
 }
 
 interface SignAccessTokenPayload {
-  payload: Payload;
+  payload: Payload; // Puedes ajustar el tipo de payload según tus necesidades
 }
 
 export const signAccessToken = (payload: SignAccessTokenPayload): Promise<string> => {

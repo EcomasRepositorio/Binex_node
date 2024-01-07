@@ -27,19 +27,15 @@ export const createPost = async (
     next: NextFunction,
   ) => {
     try {
-      const { body } = req
-      const result = await postService.create(body)
-      res.status(200).json(result);
+      const { body } = req;
+      const {authorId } = req.body
+      const result = await postService.create(body, authorId);
+      res.status(201).json(result);
     } catch (error: any) {
       console.log(error);
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code == 'P2025') {
-          next({
-            status: 400,
-            message: 'Error: AuthorId inexistent',
-            errorContent: error.meta?.cause
-          })
-        }
+      } else {
+        res.status(400).json(error)
       }
     }
   };

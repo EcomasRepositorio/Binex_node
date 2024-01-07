@@ -13,8 +13,6 @@ export type createPostPick = Pick<
   | "title"
   | "description"
   | "image"
-  | "createdAt"
-  | "authorId"
 >;
 
 export type updateUserPick = Pick<
@@ -38,12 +36,11 @@ export type updateStudentPick = Pick<
   Student,
   | "documentNumber"
   | "name"
-  | "code"
   | "activityAcademy"
   | "participation"
   | "institute"
   | "hour"
-  | "date"
+  | "imageCertificate"
 >;
 
 export type paginationInfo = {

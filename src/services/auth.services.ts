@@ -18,6 +18,8 @@ export class authServices {
           email: true,
           password: true,
           role: true,
+          firstName: true,
+          lastName: true,
         },
       });
       if (!user) return false;

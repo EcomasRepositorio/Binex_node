@@ -17,6 +17,7 @@ const prefix: string = "/api/v1";
 //Routes
 app.use(prefix, postRoute);
 app.use(prefix, studentRoute);
+
 //app.use(prefix, authhRouter);
 app.use(prefix, authRoutes);
 

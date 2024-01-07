@@ -29,15 +29,15 @@ export class userServices {
   }
 
   static async create( data: User ) {
+    const {
+      email,
+      role,
+      firstName,
+      lastName,
+      phone,
+      password,
+    } = data;
       try {
-        const {
-          email,
-          role,
-          firstName,
-          lastName,
-          phone,
-          password,
-      } = data;
       const verifyEmail = await prisma.user.findFirst({
         where: { email },
       });

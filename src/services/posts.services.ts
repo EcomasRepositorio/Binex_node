@@ -29,17 +29,16 @@ export class postService {
     }
   }
 
-  static async create ({ title, description, image, createdAt, authorId }: createPostPick) {
+  static async create ({ title, description, image }: createPostPick, authorId: User["id"]) {
     try {
       const result = await prisma.post.create({
         data: {
-          title,
-          description,
-          image,
-          createdAt,
+          title: title,
+          description: description,
+          image: image,
           author: { connect: { id: authorId } },
         }
-      })
+      });
       return result;
     } catch (error) {
       throw error;

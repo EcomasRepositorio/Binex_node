@@ -10,6 +10,7 @@ export class studentServices {
         take,
         skip,
           select: {
+            id: true,
             documentNumber: true,
             name: true,
             code: true,
@@ -53,7 +54,9 @@ export class studentServices {
   static async searchDNI(documentNumber: Student["documentNumber"]) {
     try {
       const result = await prisma.student.findMany({
-        where: { documentNumber },
+        where: {
+          documentNumber: { equals: documentNumber }
+        },
         select: {
           documentNumber: true,
           name: true,
@@ -64,9 +67,12 @@ export class studentServices {
           hour: true,
           date: true,
           imageCertificate: true,
-        }
+        },
+        take: 15,
       });
-      if (!result) return false;
+      if (result.length === 0) {
+        return null;
+      }
       return result;
     } catch ( error ) {
       throw error;
@@ -79,7 +85,7 @@ export class studentServices {
         where: {
           name: { contains: name.toLowerCase() },
         },
-        orderBy: { name: "asc" },
+        orderBy: { name:"asc" },
         select: {
           documentNumber: true,
           name: true,
@@ -91,7 +97,7 @@ export class studentServices {
           date: true,
           imageCertificate: true,
         },
-        take: 15
+        take: 15,
       });
       return result;
     } catch ( error ) {
@@ -129,7 +135,22 @@ export class studentServices {
     } catch ( error ) {
       throw error;
     }
-  }
+  };
+
+  static async createAll( students: Student[] ) {
+    try {
+      const data = students.map((student) => ({
+        ...student,
+      }))
+      const result = await prisma.student.createMany({
+        data,
+        skipDuplicates: false
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   static async update(data: updateStudentPick, id: Student["id"]) {
     try {

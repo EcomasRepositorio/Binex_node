@@ -21,23 +21,22 @@ model User {
   role        Role        @default(ADMIN)
   token       String?
   createdAt   DateTime    @default(now())
-  udateAt     DateTime    @updatedAt
+  updateAt    DateTime?   @updatedAt
   posts       Post[]
 }
 
 model Student {
   id                Int         @id @default(autoincrement())
-  documentNumber    Int
+  documentNumber    String
   name              String
-  code              Int
+  code              Int         @unique
   activityAcademy   String
   participation     String
   institute         String
-  hour              DateTime
-  date              DateTime
+  hour              Int
+  date              DateTime    @default(now())
   imageCertificate  String?
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
+  updatedAt         DateTime?   @updatedAt
 }
 
 model Post {
@@ -46,7 +45,7 @@ model Post {
   description     String
   image           String?
   createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  updatedAt       DateTime?   @updatedAt
   authorId        Int         @unique
   author          User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }

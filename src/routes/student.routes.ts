@@ -6,17 +6,20 @@ import {
   showStudentName,
   createStudent,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  createAllStudent
 } from "../controllers/students.controllers";
+import { validateCreateStudents, validateUpdateStudent } from "../middlewares/student.middlewares";
 import { userRole } from "../middlewares/role.middlewares";
+import { pagination } from "../utils/pagination.server";
 
 export const studentRoute = Router();
 
 studentRoute.get("/students", showAllStudents)
 studentRoute.get("/student/code/:code", showStudentCode)
-studentRoute.get("/student/dni/:DNI", showStudentDNI)
+studentRoute.get("/student/dni/:documentNumber", showStudentDNI)
 studentRoute.get("/student/name/:name", showStudentName)
-studentRoute.post("/student", createStudent)
-studentRoute.put("/student/:id", updateStudent)
+studentRoute.post("/student", validateCreateStudents, createStudent)
+studentRoute.post("/students/many", createAllStudent)
+studentRoute.put("/student/:id", validateUpdateStudent, updateStudent)
 studentRoute.delete("/student/:id", deleteStudent)
-

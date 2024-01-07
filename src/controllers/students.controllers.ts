@@ -1,7 +1,7 @@
-import { Prisma, Student } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from "express";
 import { studentServices } from "../services/students.services";
-import { paginationInfo, Payload, userInfo } from '../utils/format.server';
+import { paginationInfo } from '../utils/format.server';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const showAllStudents = async (
@@ -13,8 +13,13 @@ export const showAllStudents = async (
     const { limit, offset } = res.locals as paginationInfo;
       const result = await studentServices.getAll(limit, offset)
       res.status(200).json(result);
-  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
-    res.status(400).json(error);
+  } catch (error) {
+    next ({
+      errorDescription: error,
+      status: 500,
+      message: 'Internal Server Error',
+      errorContent: 'Error: Internal Server Error'
+    })
   }
 };
 
@@ -30,25 +35,27 @@ export const showStudentCode = async (
       const result = await studentServices.searchCode(convertCode);
       if (result == null) {
         next ({
-          errorDescription: "Error,",
-          status: 400,
-          message: "Error, No se puedo encontrar la lista",
-          errorContent: "Error,"
-        })
+          status: 404,
+          message: "Inser a valid code",
+          errorContent: "Error, Incorrect code"
+        });
       } else {
         res.status(200).json(result)
       }
     } else {
-        res.status(400).json({ error: convertCode })
+        next ({
+          status: 400,
+          message: "Inser a valid code",
+          errorContent: "Error, Unassignable code"
+        });
     }
-} catch (error) {
-  //console.log(error)
-  next ({
-    errorDescription: error,
-    status: 404,
-    message: "Error, No se puedo encontrar la lista code",
-    errorContent: "Error,"
-  })
+  } catch (error) {
+    next ({
+      errorDescription: error,
+      status: 404,
+      message: "Inser a valid code",
+      errorContent: "Error, Invalid code"
+    })
   }
 };
 
@@ -58,65 +65,69 @@ export const showStudentDNI = async (
   next: NextFunction,
 ) => {
   try {
-    let { DNI } = req.params
-    console.log(req.params)
-    const convertDNI = parseInt(DNI)
-    console.log(convertDNI)
-    if (typeof convertDNI  ===  "number" && convertDNI >= 0) {
-      const result = await studentServices.searchDNI(convertDNI);
-      console.log(result)
-      /* if (result == null) {
-        next ({
-          errorDescription: "Error,",
-          status: 400,
-          message: "Error, No se puedo encontrar la lista",
-          errorContent: "Error,"
-        })
-      } else {} */
-        res.status(200).json(result)
-    } else {
-        res.status(400).json({ error: convertDNI })
+    const { documentNumber } = req.params;
+    if (typeof documentNumber !== 'string' || documentNumber.trim() === '') {
+      return next({
+        status: 400,
+        message: 'Insert a valid DNI',
+        errorContent: 'Error: Invalid DNI',
+      });
     }
-  } catch (error: any) {
-    console.log(error)
-    next ({
+    const result = await studentServices.searchDNI(documentNumber.trim());
+    if (result === null || result.length === 0) {
+      return next({
+        status: 400,
+        message: 'Insert a valid DNI',
+        errorContent: 'Error: Incorrect DNI',
+      });
+    }
+    return res.status(200).json(result);
+  } catch (error) {
+    return next({
       errorDescription: error,
-      status: 404,
-      message: "Error, Invalid DNI",
-      errorContent: "Error,"
-    })
+      status: 500,
+      message: 'Internal Server Error',
+      errorContent: 'Error: Internal Server Error'
+    });
   }
 };
 
 export const showStudentName = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      let { name } = req.params;
-      console.log(req.params)
-        if (typeof name === "string" && name.trim() !== "") {
-        const result = await studentServices.searchName(name.trim());
-        console.log(result)
-        if (result.length > 0) {
-          res.status(200).json(result)
-        } else {
-          res.status(404).json({ message: 'Error: Incorrect name'})
-        }
-        } else {
-          res.status(400).json({ error: 'error' })
-        }
-      } catch (error) {
-        console.log(error)
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    let { name } = req.params;
+    console.log(req.params)
+      if (typeof name === "string" && name.trim() !== "") {
+      const result = await studentServices.searchName(name.trim());
+      console.log(result)
+      if (result.length > 0) {
+        res.status(200).json(result)
+      } else {
         next ({
-          errorDescription: error,
           status: 400,
-          message: "Error, No se puedo encontrar la lista name",
-          errorContent: "Error,"
+          message: "Insert a valid name",
+          errorContent: "Error: Incorrect name"
         })
       }
-  };
+      } else {
+        next ({
+          status: 404,
+          message: "Insert a valid name",
+          errorContent: "Error: Invalid name"
+        })
+      }
+    } catch (error) {
+      next ({
+        errorDescription: error,
+        status: 500,
+        message: 'Internal Server Error',
+        errorContent: 'Error: Internal Server Error'
+      })
+    }
+};
 
 export const createStudent = async (
   req: Request,
@@ -126,9 +137,64 @@ export const createStudent = async (
   try {
     const { body } = req;
     const result = await studentServices.create(body)
-    res.status(201).json(result)
-  } catch (error) {
-    //console.log(error);
+      res.status(201).json(result)
+  } catch (error: any) {
+    console.log(error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code == "2002") {
+        next ({
+          errorDescription: error.meta,
+          status: 400,
+          message: 'Error: Insert new code',
+          errorContent: 'Error: Unique constraint failed in code'
+        });
+      } else {
+          next ({
+            errorDescription: error,
+            status: 404,
+            message: 'Error: Duplicate constraint code',
+            errorContent: error.clientVersion
+          })
+        }
+    } else {
+        next ({
+          errorDescription: error,
+          status: 404,
+          message: 'Error: Value in hour or code is not a valid',
+          errorContent: error.clientVersion
+        });
+    }
+  }
+};
+
+export const createAllStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { body } = req;
+    const result = await studentServices.createAll(body);
+      res.status(201).json(result);
+  } catch (error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      if (error.code == "P2002") {
+        next ({
+          errorDescription: error.meta?.target,
+          status: 400,
+          message: "Error: Insert 'code' correct",
+          errorContent: "Error: Duplicate code"
+        });
+      }
+    } else {
+      next({
+        errorDescription: error,
+        status: 400,
+        message: "Error: Data incorrect",
+        errorContent: error.clientVersion
+      });
+    }
   }
 };
 
@@ -146,14 +212,37 @@ export const updateStudent = async (
       res.status(200).json(result);
     } else {
       next({
+        errorDescription: convertId,
         status: 400,
         message: "Invalid Id",
         errorContent: "Insert a valid Id",
-      })
+      });
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      //console.log(error);
+      console.log(error);
+      if (error.code == "2025") {
+        next ({
+          errorDescription: error,
+          status: 400,
+          message: "Error: Invalid Id",
+          errorContent: error.meta?.cause
+        });
+      } else {
+        next ({
+          errorDescription: error,
+          status: 400,
+          message: "Error: Invalid Id",
+          errorContent: "Error: Record to update not found"
+        });
+      }
+    } else {
+      next({
+        errorDescription: error.description,
+        status: 400,
+        message: 'Error: Invalid hour or id',
+        errorContent: error.clientVersion
+      });
     }
   }
 };
@@ -173,13 +262,27 @@ export const deleteStudent = async (
         next({
           errorDescription: convertId,
           status: 400,
-          message: "Error, Insert a valid Id",
-          errorContent: "Error, Invalid id for user",
-        })
+          message: "Error: Insert a valid Id",
+          errorContent: "Error: Invalid Id",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof PrismaClientKnownRequestError) {
-        //console.log(error);
+        if (error.code == "P2025") {
+          next({
+            errorDescription: error,
+            status: 400,
+            message: "Error: Invalid Id",
+            errorContent: error.meta?.cause
+          });
+        }
+      } else {
+        next({
+          errorDescription: error.description,
+          status: 400,
+          message: "Error: Invalid Id",
+          errorContent: error.clientVersion
+        });
       }
   }
 }
