@@ -1,6 +1,6 @@
 import app from "./routesmain";
 import { prisma } from "./utils/prisma.server";
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 // export const app = express();
 

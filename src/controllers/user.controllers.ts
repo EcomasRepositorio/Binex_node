@@ -22,45 +22,6 @@ export const showAllUser = async (
     }
   };
 
-  export const createUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const result = await userServices.create(req.body);
-      if (!result) {
-        next({
-          errorDescription: "Unique constraint failed on the fields: (`email`)",
-          status: 400,
-          message: "Error, dirección de email ya existe",
-          errorContent: "Unique constraint failed on the fields: (`email`)",
-        });
-      } else {
-        res.status(201).json(result);
-      }
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code == "P2002") {
-          next({
-            errorDescription: error,
-            status: 400,
-            message: "Error, documento de identidad ya existe",
-            errorContent:
-              "Unique constraint failed on the fields: (`documentNumber`)",
-          });
-        } else {
-          next({
-            errorDescription: error,
-            status: 400,
-            message: "Error, prisma client error, check logs",
-            errorContent: error.clientVersion,
-          });
-        }
-      }
-    }
-  };
-
   export const updateUser = async (
     req: Request,
     res: Response,
@@ -80,7 +41,7 @@ export const showAllUser = async (
           errorContent: "Insert a valid Id",
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         //console.log(error);
       }

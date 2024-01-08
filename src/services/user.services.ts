@@ -2,15 +2,21 @@ import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { prisma } from "../utils/prisma.server";
 import { updateUserPick } from "../utils/format.server";
+import jwt from "jsonwebtoken";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export class userServices {
+
+  // Mostrar todos los 'USER' & 'ADMIN'
   static async getAll(
     take: number,
     skip: number
   ) {
     try {
       const result = await prisma.user.findMany({
-        orderBy: { id: "desc" },
+        orderBy: { id: "asc" },
         select: {
           id: true,
           email: true,
@@ -18,45 +24,12 @@ export class userServices {
           lastName: true,
           phone: true,
           role: true,
+          token: true,
         },
         take,
         skip,
       });
       return result;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  static async create( data: User ) {
-    const {
-      email,
-      role,
-      firstName,
-      lastName,
-      phone,
-      password,
-    } = data;
-      try {
-      const verifyEmail = await prisma.user.findFirst({
-        where: { email },
-      });
-      if (!verifyEmail) {
-        const passwordHash = await bcrypt.hash(password, 10);
-        const newUser = await prisma.user.create({
-          data: {
-            email,
-            password: passwordHash,
-            firstName,
-            lastName,
-            phone,
-            role,
-          },
-        });
-        return newUser;
-      } else {
-        return null;
-      }
     } catch (error) {
       throw error;
     }

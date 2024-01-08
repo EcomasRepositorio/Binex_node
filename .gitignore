@@ -1,10 +1,8 @@
 node_modules
 package-lock.json
 database
-IMG_BANNER_BINEX
 PDF_BINEX
 app.json
-dbmysql.txt
 importExcel.js
 router.js
 .env
