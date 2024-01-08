@@ -14,10 +14,11 @@ export const showAllPosts = async (
       res.status(200).json(result);
   } catch (error) {
       next({
+        errorDescription: error,
         status: 400,
-        message: 'Error: Insert valid Id',
-        errorContent: ''
-      })
+        message: "Error: No se pudo mostrar la lista de post",
+        errorContent: "Error: Could not display post list"
+      });
   }
 };
 
@@ -28,14 +29,27 @@ export const createPost = async (
   ) => {
     try {
       const { body } = req;
-      const {authorId } = req.body
+      const { authorId } = body;
       const result = await postService.create(body, authorId);
       res.status(201).json(result);
     } catch (error: any) {
-      console.log(error);
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.log(error);
+        if (error.code == "P2025") {
+          next({
+            errorDescription: error,
+            status: 400,
+            message: "Error: User id not existing",
+            errorContent: error.meta?.cause
+          });
+        }
       } else {
-        res.status(400).json(error)
+        next({
+          errorDescription: error,
+          status: 400,
+          message: "Error: User id invalid",
+          errorContent: error.clientVersion
+        });
       }
     }
   };
@@ -55,8 +69,9 @@ export const updatePost = async (
       } else {
         next({
           status: 400,
-          message: 'Invalid Id'
-        })
+          message: "Error: Insert valid Id",
+          errorContent: "Error: Invalid Id"
+        });
       }
     } catch (error: any) {
       console.log(error);
@@ -67,34 +82,16 @@ export const updatePost = async (
             status: 400,
             message: 'Error: not exist Id',
             errorContent: error.meta?.cause
-          })
-        } else if (error.code == 'P2009') {
-          next({
-            status: 400,
-            message: 'Error: Id inexistent',
-            errorContent: error.meta?.query_validation_error
-          })
-        } else if (error.code == 'P2033') {
-          next({
-            status: 400,
-            message: 'Error: Id incorrect',
-            errorContent: error.meta?.details
-          })
-        } else if (error.code == 'P2002') {
-          next({
-            status: 400,
-            message: 'Error: update done',
-            errorContent: error.meta?.target
-          })
+          });
         } else {
           res.status(400).json(error)
         }
       } else {
         next({
           status: 400,
-          message: 'Error: insert valid Id',
+          message: "Error: Inser correct Id",
           errorContent: error.clientVersion
-        })
+        });
       }
     }
   };
@@ -113,8 +110,9 @@ export const deletePost = async (
       } else {
         next({
           status: 400,
-          message: 'Error: invalid Id'
-        })
+          message: "Error: Insert valid Id",
+          errorContent: "Error: Invalid Id"
+        });
       }
     } catch (error: any) {
       console.log(error);
@@ -135,7 +133,11 @@ export const deletePost = async (
           res.status(400).json(error);
         }
       } else {
-        res.status(400).json(error)
+        next({
+          status: 400,
+          message: "Error: Insert correct Id",
+          errorContent: error.clientVersion
+        })
       }
     }
   };

@@ -69,7 +69,7 @@ export const showStudentDNI = async (
     if (typeof documentNumber !== 'string' || documentNumber.trim() === '') {
       return next({
         status: 400,
-        message: 'Insert a valid DNI',
+        message: 'Error: Insert a valid DNI',
         errorContent: 'Error: Invalid DNI',
       });
     }
@@ -77,8 +77,8 @@ export const showStudentDNI = async (
     if (result === null || result.length === 0) {
       return next({
         status: 400,
-        message: 'Insert a valid DNI',
-        errorContent: 'Error: Incorrect DNI',
+        message: 'Error: Insert a valid DNI',
+        errorContent: 'Error: Invalid DNI',
       });
     }
     return res.status(200).json(result);
@@ -285,4 +285,4 @@ export const deleteStudent = async (
         });
       }
   }
-}
+};

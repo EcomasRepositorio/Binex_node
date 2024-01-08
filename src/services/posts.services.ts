@@ -33,9 +33,9 @@ export class postService {
     try {
       const result = await prisma.post.create({
         data: {
-          title: title,
-          description: description,
-          image: image,
+          title,
+          description,
+          image,
           author: { connect: { id: authorId } },
         }
       });
