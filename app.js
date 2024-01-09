@@ -22,6 +22,6 @@ const credentials = {
 // Crear servidor HTTP (cambiado de HTTPS a HTTP)
 const httpServer = http.createServer(app);
 
-httpServer.listen(8443, () => {
+httpServer.listen(4000, () => {
   console.log('HTTP SERVER Running in http://localhost:4000');
 });
