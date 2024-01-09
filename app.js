@@ -20,7 +20,7 @@ const credentials = {
  };
 
 // Crear servidor HTTP (cambiado de HTTPS a HTTP)
-const httpServer = https.createServer(credentials, app);
+const httpsServer = https.createServer(credentials, app);
 
 httpsServer.listen(4000, () => {
   console.log('HTTPS SERVER Running in https://localhost:4000');
