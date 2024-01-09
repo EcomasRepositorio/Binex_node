@@ -1,6 +1,11 @@
+import { Request, Response } from 'express';
 import { Post, User } from "@prisma/client";
 import { prisma } from "../utils/prisma.server";
 import { createPostPick, updatePostPick } from "../utils/format.server";
+import { imageUpload } from '../utils/upload.server';
+import { promisify } from 'util';
+
+const imageUploadAsync = promisify(imageUpload);
 
 export class postService {
   static async getAll ( take: number, skip: number ) {
@@ -22,25 +27,32 @@ export class postService {
             }
           }
         },
-      })
+      });
       return result;
     } catch (error) {
       throw error;
     }
   }
 
-  static async create ({ title, description, image }: createPostPick, authorId: User["id"]) {
+  //const imageUploadAsync = promisify(imageUpload);
+  static async create (data:Post, authorId: User["id"], req: Request, res: Response) {
+    const {
+      title,
+      description
+     } = data;
     try {
-      const result = await prisma.post.create({
-        data: {
-          title,
-          description,
-          image,
-          author: { connect: { id: authorId } },
-        }
-      });
+      await imageUploadAsync(req, res);
+        const result = await prisma.post.create({
+          data: {
+            title,
+            description,
+            image: req.file?.filename,
+            author: { connect: { id: authorId } },
+          }
+        });
       return result;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   }

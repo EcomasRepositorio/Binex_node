@@ -29,8 +29,9 @@ export const createPost = async (
   ) => {
     try {
       const { body } = req;
+      console.log(req);
       const { authorId } = body;
-      const result = await postService.create(body, authorId);
+      const result = await postService.create(body, authorId, req, res);
       res.status(201).json(result);
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {

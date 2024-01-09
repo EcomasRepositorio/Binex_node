@@ -8,6 +8,6 @@ import { authenticate } from "../middlewares/auth.middlewares";
 export const postRoute = Router();
 
 postRoute.get("/posts", showAllPosts)
-postRoute.post("/post",validatePost, createPost)
+postRoute.post("/post", createPost)
 postRoute.put("/post/:id",validatePost, updatePost)
 postRoute.delete("/post/:id", deletePost)
