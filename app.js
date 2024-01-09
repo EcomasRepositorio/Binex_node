@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const http = require('http'); // Cambiado a HTTP en lugar de HTTPS
+const http = require('https'); // Cambiado a HTTP en lugar de HTTPS
 const fs = require('fs'); 
 const app = express();
 const path = require('path');
@@ -20,8 +20,8 @@ const credentials = {
  };
 
 // Crear servidor HTTP (cambiado de HTTPS a HTTP)
-const httpServer = http.createServer(app);
+const httpServer = https.createServer(credentials, app);
 
-httpServer.listen(4000, () => {
-  console.log('HTTP SERVER Running in http://localhost:4000');
+httpsServer.listen(4000, () => {
+  console.log('HTTPS SERVER Running in https://localhost:4000');
 });
