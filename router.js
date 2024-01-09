@@ -24,20 +24,15 @@ router.use('/server/pdf', express.static('PDF_BINEX/'));
 const upload = multer({ storage: storage });
 
 
-
 router.get("/server/students", (req, res) => {
   conexion.query("SELECT * FROM participantes", (error, results) => {
     if (error) {
-      console.error('Error en la consulta SQL:', error);
-      res.status(500).json({ error: 'Error en la consulta SQL' });
+      throw error;
     } else {
-      res.json({ results: results });  // Usar res.json en lugar de res.send
+      res.send({ results: results });
     }
   });
 });
-
-
-
 
 
 router.post('/server/students/save', upload.single('PDF'), async (req, res) => {
@@ -85,7 +80,7 @@ router.post('/server/students/save', upload.single('PDF'), async (req, res) => {
         (error, result) => {
           if (error) {
             return res.status(500).json({
-              error: "Error al actualizar el participante en la base de datos",
+              error: "Error al actualizar el participante en la base de datos /router",
             });
           }
           return res
@@ -144,7 +139,7 @@ router.delete("/server/students/delete/:codigo",(req, res) => {
 
 
 cron.schedule('* * * * *', () => {
-  const directory = 'IMG_BANNER_BINEX/';
+  const directory = 'IMG_BANNER_ECOMAS/';
   const thresholdTime = 30 * 24 * 60 * 60 * 1000; // Un mes en milisegundos
 
   fs.readdir(directory, (err, files) => {
