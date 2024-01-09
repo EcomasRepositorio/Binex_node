@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http'); // Cambiado a HTTP en lugar de HTTPS
+const fs = require('fs'); 
 const app = express();
 const path = require('path');
 
