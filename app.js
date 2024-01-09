@@ -12,7 +12,7 @@ app.use(express.static('public'));
 app.use('/pdfs', express.static(path.join(__dirname, 'PDF_BINEX')));
 
 // // Configuración de certificado y clave (COMENTADO)
-const certificatePath = '/etc/letsencrypt/live/www.binex.edu.pe/fullchain.pem;';
+const certificatePath = '/etc/letsencrypt/live/www.binex.edu.pe/fullchain.pem';
 const privateKeyPath = '/etc/letsencrypt/live/www.binex.edu.pe/privkey.pem';
 const credentials = {
    key: fs.readFileSync(privateKeyPath),
