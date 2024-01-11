@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Post, User } from "@prisma/client";
 import { prisma } from "../utils/prisma.server";
-import { createPostPick, updatePostPick } from "../utils/format.server";
+import { updatePostPick } from "../utils/format.server";
 import { imageUpload } from '../utils/upload.server';
 import { promisify } from 'util';
 
@@ -18,6 +18,7 @@ export class postService {
           id: true,
           title: true,
           description: true,
+          image: true,
           createdAt: true,
           author: {
             select: {
@@ -32,7 +33,7 @@ export class postService {
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   //const imageUploadAsync = promisify(imageUpload);
   static async create (data:Post, authorId: User["id"], req: Request, res: Response) {
@@ -55,7 +56,7 @@ export class postService {
       console.log(error);
       throw error;
     }
-  }
+  };
 
   static async update(id: Post["id"],
   { title, description }: updatePostPick
@@ -78,7 +79,7 @@ export class postService {
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   static async delete(id: Post["id"]) {
     try {
@@ -89,5 +90,5 @@ export class postService {
     } catch (error) {
       throw error;
     }
-  }
-}
+  };
+};

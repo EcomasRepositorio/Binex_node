@@ -29,11 +29,11 @@ model Student {
   id                Int         @id @default(autoincrement())
   documentNumber    String
   name              String
-  code              Int         @unique
+  code              String      @unique
   activityAcademy   String
   participation     String
   institute         String
-  hour              Int
+  hour              Int?
   date              DateTime    @default(now())
   imageCertificate  String?
   updatedAt         DateTime?   @updatedAt

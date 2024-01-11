@@ -30,9 +30,8 @@ export const showStudentCode = async (
 ) => {
   try {
     let { code } = req.params
-    const convertCode = parseInt(code)
-    if (typeof convertCode  ===  "number" && convertCode >= 0) {
-      const result = await studentServices.searchCode(convertCode);
+    if (typeof code  ===  "string" && code.trim() !== '') {
+      const result = await studentServices.searchCode(code);
       if (result == null) {
         next ({
           status: 404,
@@ -160,7 +159,7 @@ export const createStudent = async (
         next ({
           errorDescription: error,
           status: 404,
-          message: 'Error: Value in hour or code is not a valid',
+          message: 'Error: Value in hour is not a valid',
           errorContent: error.clientVersion
         });
     }

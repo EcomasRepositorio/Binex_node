@@ -6,13 +6,15 @@ export const validateCreateStudents = async (
   next: NextFunction
 ) => {
   const {
-    documentNumber,
     name,
     code,
     activityAcademy,
     participation,
     institute,
+    hour
   } = req.body;
+
+  const documentNumber = req.body.documentNumber ?? '';
 
   if (typeof documentNumber !== "string" || documentNumber.length !== 8) {
     res.status(400).json({
@@ -22,7 +24,7 @@ export const validateCreateStudents = async (
     res.status(400).json({
       error: `Value '${name}' not set to name`
     });
-  } else if (typeof code !== "number") {
+  } else if (typeof code !== "string" || code.length !== 9) {
     res.status(400).json({
       error: `Value '${code}' not set to code`
     });
