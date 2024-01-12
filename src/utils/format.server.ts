@@ -8,6 +8,19 @@ export type loginPick = Pick<
   User,
   "email" | "password">;
 
+export type createStudentsPick = Pick<
+  Student,
+  | "documentNumber"
+  | "name"
+  | "code"
+  | "activityAcademy"
+  | "participation"
+  | "institute"
+  | "hour"
+  | "date"
+  | "imageCertificate"
+>;
+
 export type createPostPick = Pick<
   Post,
   | "title"

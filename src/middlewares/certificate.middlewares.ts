@@ -1,17 +1,27 @@
 import multer, { StorageEngine } from 'multer';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import path from 'path';
+
+declare module 'express' {
+  interface Request {
+    fileId?: string;
+  }
+};
 
 const storage: StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploads/certificate');
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${file.fieldname}-${uniqueSuffix}`);
+    const fileId = `image-${uniqueSuffix}${path.extname(file.originalname)}`;
+    cb(null, fileId);
+    req.fileId = fileId;
   },
 });
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+//console.log(file)
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {

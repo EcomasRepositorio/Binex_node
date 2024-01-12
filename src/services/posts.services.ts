@@ -1,11 +1,6 @@
-import { Request, Response } from 'express';
 import { Post, User } from "@prisma/client";
 import { prisma } from "../utils/prisma.server";
 import { updatePostPick } from "../utils/format.server";
-import { imageUpload } from '../utils/upload.server';
-import { promisify } from 'util';
-
-const imageUploadAsync = promisify(imageUpload);
 
 export class postService {
   static async getAll ( take: number, skip: number ) {
@@ -35,19 +30,17 @@ export class postService {
     }
   };
 
-  //const imageUploadAsync = promisify(imageUpload);
-  static async create (data:Post, authorId: User["id"], req: Request, res: Response) {
+  static async create (data:Post, authorId: User["id"], file: Express.Multer.File | undefined) {
     const {
       title,
       description
      } = data;
     try {
-      await imageUploadAsync(req, res);
         const result = await prisma.post.create({
           data: {
             title,
             description,
-            image: req.file?.filename,
+            image: file ? `uploads/post/${file.filename}` : null,
             author: { connect: { id: authorId } },
           }
         });

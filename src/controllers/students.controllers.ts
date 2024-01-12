@@ -2,12 +2,11 @@ import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from "express";
 import { studentServices } from "../services/students.services";
 import { paginationInfo } from '../utils/format.server';
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const showAllStudents = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const { limit, offset } = res.locals as paginationInfo;
@@ -26,7 +25,7 @@ export const showAllStudents = async (
 export const showStudentCode = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     let { code } = req.params
@@ -35,7 +34,7 @@ export const showStudentCode = async (
       if (result == null) {
         next ({
           status: 404,
-          message: "Inser a valid code",
+          message: "Insert a valid code",
           errorContent: "Error, Incorrect code"
         });
       } else {
@@ -44,7 +43,7 @@ export const showStudentCode = async (
     } else {
         next ({
           status: 400,
-          message: "Inser a valid code",
+          message: "Insert a valid code",
           errorContent: "Error, Unassignable code"
         });
     }
@@ -52,7 +51,7 @@ export const showStudentCode = async (
     next ({
       errorDescription: error,
       status: 404,
-      message: "Inser a valid code",
+      message: "Insert a valid code",
       errorContent: "Error, Invalid code"
     })
   }
@@ -131,14 +130,21 @@ export const showStudentName = async (
 export const createStudent = async (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const { body } = req;
-    const result = await studentServices.create(body)
+    const result = await studentServices.create(body, req.file);
+    if (result) {
       res.status(201).json(result)
+    } else {
+      next({
+        status: 500,
+        message: 'Error al crear el estudiante',
+        errorContent: 'El resultado es undefined',
+      });
+    }
   } catch (error: any) {
-    console.log(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code == "2002") {
         next ({
@@ -173,11 +179,10 @@ export const createAllStudent = async (
 ) => {
   try {
     const { body } = req;
-    const result = await studentServices.createAll(body);
+    const result = await studentServices.createAll(body, req.file);
       res.status(201).json(result);
   } catch (error: any) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(error);
       if (error.code == "P2002") {
         next ({
           errorDescription: error.meta?.target,
@@ -266,7 +271,7 @@ export const deleteStudent = async (
         });
       }
     } catch (error: any) {
-      if (error instanceof PrismaClientKnownRequestError) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code == "P2025") {
           next({
             errorDescription: error,

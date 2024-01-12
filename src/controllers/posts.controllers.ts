@@ -31,8 +31,18 @@ export const createPost = async (
       const { body } = req;
       console.log(req);
       const { authorId } = body;
-      const result = await postService.create(body, authorId, req, res);
-      res.status(201).json(result);
+      const result = await postService.create(body, authorId, req.file);
+
+      if (result) {
+        res.status(201).json(result)
+      } else {
+        next({
+          status: 500,
+          message: 'Error al crear el post',
+          errorContent: 'El resultado es undefined',
+        });
+
+      }
     } catch (error: any) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.log(error);

@@ -103,9 +103,9 @@ export class studentServices {
     } catch ( error ) {
       throw error;
     }
-  }
+  };
 
-  static async create( data: Student ) {
+  static async create( data: Student, file: Express.Multer.File | undefined ) {
     try {
       const {
         documentNumber,
@@ -116,7 +116,6 @@ export class studentServices {
         institute,
         hour,
         date,
-        imageCertificate,
       } = data;
       const result = await prisma.student.create({
         data: {
@@ -128,7 +127,7 @@ export class studentServices {
           institute,
           hour,
           date,
-          imageCertificate,
+          imageCertificate: file? `uploads/certificate/${file.filename}` : null,
         }
       });
       return result;
@@ -137,14 +136,19 @@ export class studentServices {
     }
   };
 
-  static async createAll( students: Student[] ) {
+  static async createAll( students: Student[], file: Express.Multer.File | undefined ) {
     try {
+      let imageCertificate: string | null = null;
+        if (file) {
+            const fileExtension = file.originalname.split('.').pop(); // Obtener la extensión del archivo
+            imageCertificate = `uploads/certificate/${file.filename}.${fileExtension}`;
+        }
       const data = students.map((student) => ({
         ...student,
       }))
       const result = await prisma.student.createMany({
         data,
-        skipDuplicates: false
+        skipDuplicates: false,
       });
       return result;
     } catch (error) {
