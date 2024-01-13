@@ -140,7 +140,7 @@ export class studentServices {
     try {
       let imageCertificate: string | null = null;
         if (file) {
-            const fileExtension = file.originalname.split('.').pop(); // Obtener la extensión del archivo
+            const fileExtension = file.originalname.split('.').pop();
             imageCertificate = `uploads/certificate/${file.filename}.${fileExtension}`;
         }
       const data = students.map((student) => ({
