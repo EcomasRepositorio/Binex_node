@@ -212,7 +212,7 @@ export const updateStudent = async (
     const data = req.body;
     const convertId = parseInt(id);
     if (typeof convertId === "number" && convertId >= 0) {
-      const result = await studentServices.update(data, convertId)
+      const result = await studentServices.update(data, convertId, req.file)
       res.status(200).json(result);
     } else {
       next({

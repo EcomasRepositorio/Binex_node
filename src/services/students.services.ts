@@ -156,11 +156,34 @@ export class studentServices {
     }
   };
 
-  static async update(data: updateStudentPick, id: Student["id"]) {
+  static async update(data: Student, id: Student["id"], file: Express.Multer.File | undefined) {
     try {
+      const {
+        documentNumber,
+        name,
+        code,
+        activityAcademy,
+        participation,
+        institute,
+        hour,
+        date
+      } = data;
+      if (file) {
+        data.imageCertificate = `uploads/certificate/${file.filename}`
+      }
       const result = await prisma.student.update({
-        where: { id },
-        data: data,
+        where: { id: id },
+        data: {
+          documentNumber,
+          name,
+          code,
+          activityAcademy,
+          participation,
+          institute,
+          hour,
+          date,
+          imageCertificate: file? `uploads/certificate/${file.filename}` : null,
+        }
       });
       return result;
     } catch (error) {

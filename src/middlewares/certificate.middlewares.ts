@@ -13,15 +13,14 @@ const storage: StorageEngine = multer.diskStorage({
     cb(null, 'uploads/certificate');
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const fileId = `image-${uniqueSuffix}${path.extname(file.originalname)}`;
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const fileId = `image-${unique}${path.extname(file.originalname)}`;
     cb(null, fileId);
     req.fileId = fileId;
   },
 });
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-//console.log(file)
   if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {

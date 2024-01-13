@@ -13,6 +13,7 @@ import { validateCreateStudents, validateUpdateStudent } from "../middlewares/st
 import { imageUpload } from "../middlewares/certificate.middlewares";
 import { userRole } from "../middlewares/role.middlewares";
 import { pagination } from "../utils/pagination.server";
+import excelUpload from '../middlewares/excel.middlewares';
 
 export const studentRoute = Router();
 
@@ -21,6 +22,8 @@ studentRoute.get("/student/code/:code", showStudentCode)
 studentRoute.get("/student/dni/:documentNumber", showStudentDNI)
 studentRoute.get("/student/name/:name", showStudentName)
 studentRoute.post("/student", imageUpload, createStudent)
-studentRoute.post("/students/many", imageUpload, createAllStudent)
-studentRoute.put("/student/:id", validateUpdateStudent, updateStudent)
+studentRoute.post("/students/many", excelUpload, (req, res) => {
+  res.json({ message: 'Archivo Excel procesado correctamente'})
+})
+studentRoute.put("/student/:id", imageUpload, validateUpdateStudent, updateStudent)
 studentRoute.delete("/student/:id", deleteStudent)
