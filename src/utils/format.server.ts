@@ -59,7 +59,7 @@ export type updateStudentPick = Pick<
 export type paginationInfo = {
   limit: number;
   offset: number;
-}
+};
 
 export type userInfo = {
   id: number;
@@ -67,7 +67,7 @@ export type userInfo = {
   password?: string;
   role: Role;
   iat: number;
-}
+};
 
 export type errorProp = {
   errorDescription?: Prisma.PrismaClientKnownRequestError | any;
@@ -81,5 +81,17 @@ export type Payload = {
   password: string;
   firstName: string;
   lastName: string;
-}
+};
 
+export type StudentData = {
+
+  documentNumber: string;
+  name: string;
+  code: string;
+  activityAcademy: string;
+  participation: string;
+  institute: string;
+  hour: string;
+  date: string;
+  imageCertificate: string | null;
+};

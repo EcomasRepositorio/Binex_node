@@ -1,27 +1,29 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request as ExpressRequest, Response, NextFunction } from 'express';
 import path from 'path';
 import multer from 'multer';
 import xlsx from 'xlsx';
-import * as fs from 'fs';
 import { PrismaClient } from '@prisma/client';
+import { StudentData } from '../utils/format.server';
 
-const prisma = new PrismaClient();
-
+interface RequestWithStudentsData extends ExpressRequest {
+  studentsData?: StudentData[];
+}
+//const prisma = new PrismaClient();
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/excel');
-    },
-    filename: (req, file, cb) => {
-      //const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      //const fileName = `excel-${uniqueSuffix}${path.extname(file.originalname)}`;
-      cb(null, file.originalname);
-    },
-  });
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/excel');
+  },
+  filename: (req, file, cb) => {
+    const uniqueFileName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueFileName);
+    //cb(null, file.originalname);
+  },
+});
 
 const upload = multer({ storage }).single('excelFile');
 
 const excelUpload = async (
-  req: Request,
+  req: RequestWithStudentsData,
   res: Response,
   next: NextFunction
 ) => {
@@ -33,15 +35,10 @@ const excelUpload = async (
       return res.status(400).json({ error: 'No se ha proporcionado ningún archivo' });
     }
     const fileName = req.file.originalname;
-    const filePath = path.join(__dirname, 'uploads','excel', fileName);
-    console.log(filePath)
-    const fileExists = fs.existsSync(filePath);
-    if (!fileExists) {
-      console.error('El archivo no existe en la ruta especificada:', filePath);
-      return res.status(500).json({ error: 'Error interno al procesar el archivo Excel' });
-}
-
+    const filePath = path.join(process.cwd(), 'uploads', 'excel', fileName);
+    
     try {
+      console.log(filePath);
       const workbook = xlsx.readFile(filePath);
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
@@ -50,22 +47,19 @@ const excelUpload = async (
 
       // Estructurar datos para createMany
       const studentsData = data
-        .filter(row => row.length > 0)
+        .filter((row, index) => index > 0 && row.length > 0)
         .map(row => {
-        const [
-          documentNumber,
-          name,
-          code,
-          activityAcademy,
-          participation,
-          institute,
-          hour,
-          date,
-          imageFilePath
-        ] = row;
-          const dateObject = new Date(date as string);
-          const hourInt = parseInt(hour as string);
-
+          const [
+            documentNumber,
+            name,
+            code,
+            activityAcademy,
+            participation,
+            institute,
+            hour,
+            date,
+            imageFilePath
+          ] = row;
           return {
             documentNumber: documentNumber as string,
             name: name as string,
@@ -73,15 +67,13 @@ const excelUpload = async (
             activityAcademy: activityAcademy as string,
             participation: participation as string,
             institute: institute as string,
-            hour: hourInt,
-            date: dateObject,
-            imageCertificate: imageFilePath as string
+            hour: hour as string,
+            date: date as string,
+            imageCertificate: imageFilePath as string,
           };
         });
-
-      // Insertar en la base de datos utilizando createMany
-      await prisma.student.createMany({ data: studentsData });
-
+        console.log(studentsData);
+        req.studentsData = studentsData;
       next();
     } catch (error) {
       console.error('Error al procesar el archivo Excel:', error);

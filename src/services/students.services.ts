@@ -1,14 +1,15 @@
 import { Student } from "@prisma/client";
 import { prisma } from "../utils/prisma.server";
 import { updateStudentPick } from "../utils/format.server";
+import { StudentData } from "../utils/format.server";
 
 export class studentServices {
   static async getAll( take: number, skip: number ) {
     try {
       const result = await prisma.student.findMany({
-        orderBy: { date: "desc" },
         take,
         skip,
+        orderBy: { date: "desc" },
           select: {
             id: true,
             documentNumber: true,
@@ -136,20 +137,29 @@ export class studentServices {
     }
   };
 
-  static async createAll( students: Student[], file: Express.Multer.File | undefined ) {
+  static async createAll(students: StudentData[], file: Express.Multer.File | undefined) {
     try {
       let imageCertificate: string | null = null;
-        if (file) {
-            const fileExtension = file.originalname.split('.').pop();
-            imageCertificate = `uploads/certificate/${file.filename}.${fileExtension}`;
-        }
-      const data = students.map((student) => ({
-        ...student,
-      }))
+      if (file) {
+        const fileExtension = file.originalname.split('.').pop();
+        imageCertificate = `uploads/certificate/${file.filename}.${fileExtension}`;
+      }
       const result = await prisma.student.createMany({
-        data,
+        data: students.map(student => ({
+          ...student,
+          documentNumber: student.documentNumber.toString(),
+          name: student.name.toString(),
+          code: student.code.toString(),
+          activityAcademy: student.activityAcademy.toString(),
+          participation: student.participation.toString(),
+          institute: student.institute.toString(),
+          hour: student.hour.toString(),
+          date: student.date.toString(),
+          imageCertificate: student.imageCertificate?.toString() ?? null,
+        })),
         skipDuplicates: false,
       });
+
       return result;
     } catch (error) {
       throw error;

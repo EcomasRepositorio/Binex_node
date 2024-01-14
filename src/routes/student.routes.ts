@@ -22,7 +22,7 @@ studentRoute.get("/student/code/:code", showStudentCode)
 studentRoute.get("/student/dni/:documentNumber", showStudentDNI)
 studentRoute.get("/student/name/:name", showStudentName)
 studentRoute.post("/student", imageUpload, createStudent)
-studentRoute.post("/students/many", excelUpload, (req, res) => {
+studentRoute.post("/students/many", excelUpload, createAllStudent, (req, res) => {
   res.json({ message: 'Archivo Excel procesado correctamente'})
 })
 studentRoute.put("/student/:id", imageUpload, validateUpdateStudent, updateStudent)

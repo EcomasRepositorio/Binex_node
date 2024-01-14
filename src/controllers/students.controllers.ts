@@ -2,6 +2,11 @@ import { Prisma } from '@prisma/client';
 import { NextFunction, Request, Response } from "express";
 import { studentServices } from "../services/students.services";
 import { paginationInfo } from '../utils/format.server';
+import { StudentData } from '../utils/format.server';
+
+interface RequestWithStudentsData extends Request {
+  studentsData?: StudentData[];
+}
 
 export const showAllStudents = async (
   req: Request,
@@ -173,15 +178,19 @@ export const createStudent = async (
 };
 
 export const createAllStudent = async (
-  req: Request,
+  req: RequestWithStudentsData,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { body } = req;
-    const result = await studentServices.createAll(body, req.file);
+    const { studentsData } = req;
+    if (!Array.isArray(studentsData)) {
+      return res.status(400).json({ Error: 'Error: Data incorrect. Expected an array of students.' })
+    }
+    const result = await studentServices.createAll(studentsData, req.file);
       res.status(201).json(result);
   } catch (error: any) {
+    console.log(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code == "P2002") {
         next ({
