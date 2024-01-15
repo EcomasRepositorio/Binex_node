@@ -9,7 +9,7 @@ export class studentServices {
       const result = await prisma.student.findMany({
         take,
         skip,
-        orderBy: { date: "desc" },
+        orderBy: { id: "desc" },
           select: {
             id: true,
             documentNumber: true,
@@ -145,7 +145,9 @@ export class studentServices {
         imageCertificate = `uploads/certificate/${file.filename}.${fileExtension}`;
       }
       const result = await prisma.student.createMany({
-        data: students.map(student => ({
+        data: students
+        .filter(student => student.documentNumber !== undefined && student.documentNumber !== null)
+        .map(student => ({
           ...student,
           documentNumber: student.documentNumber.toString(),
           name: student.name.toString(),
