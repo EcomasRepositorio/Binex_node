@@ -14,7 +14,7 @@ export const authenticate = async (
     const result = req.headers.authorization;
     const token = result?.split(" ")[1];
     if (secret && token) {
-      const decodedToken = jwt.verify(token, secret);
+      const decodedToken = jwt.verify(token, secret, { algorithms: ["HS256"] });
       res.locals.userInfo = decodedToken;
       next();
     } else {

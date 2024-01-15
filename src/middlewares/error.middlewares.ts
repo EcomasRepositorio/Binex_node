@@ -10,6 +10,8 @@ export const handleError = async (
 ) => {
   const { status, message, errorContent, errorDescription } = error;
   const convertError: string = errorDescription?.toString();
+  const statusCode = typeof status === 'number' && !isNaN(status) ? status : 500;
+
   await prisma.logs.create({
     data: {
       errorDescription: convertError || "",
@@ -17,5 +19,5 @@ export const handleError = async (
       errorContent,
     },
   });
-  res.status(status).json({ message, errorContent });
+  res.status(statusCode).json({ message, errorContent });
 };

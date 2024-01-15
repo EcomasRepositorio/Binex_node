@@ -50,11 +50,11 @@ model Post {
 }
 
 model Logs {
-  id               Int      @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   errorDescription String?
   message          String?
   errorContent     String?
-  createdAt        DateTime @default(now())
+  createdAt        DateTime   @default(now())
 }
 
 enum Role {

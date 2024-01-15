@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 
 dotenv.config();
-const secret = process.env.SECRET;
+const secret = process.env.ACCESS_TOKEN_SECRET;
 
 export class authServices {
 
@@ -66,7 +66,8 @@ export class authServices {
   static getToken(data: userPick) {
     try {
       if (secret) {
-        const token = jwt.sign(data, secret, { algorithm: "HS512" });
+        const token = jwt.sign(data, secret, { algorithm: "HS256" });
+        console.log('Token generado:', token);
         return token;
       }
     } catch (error) {
