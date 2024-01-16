@@ -139,7 +139,7 @@ router.delete("/server/students/delete/:codigo",(req, res) => {
 
 
 cron.schedule('* * * * *', () => {
-  const directory = 'IMG_BANNER_ECOMAS/';
+  const directory = 'IMG_BANNER_BINEX/';
   const thresholdTime = 30 * 24 * 60 * 60 * 1000; // Un mes en milisegundos
 
   fs.readdir(directory, (err, files) => {
