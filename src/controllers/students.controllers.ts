@@ -6,6 +6,45 @@ import { StudentData } from '../utils/format.server';
 
 interface RequestWithStudentsData extends Request {
   studentsData?: StudentData[];
+};
+
+export const showStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const newId = parseInt(id);
+    if (typeof newId === 'number' && newId >= 0) {
+    const result = await studentServices.getStudent(newId);
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      next({
+        errorDescription: result,
+        status: 400,
+        message: 'Error: No se encontro el Id',
+        errorContent:'Error: could not find  Id'
+      })
+    }
+    } else {
+      next({
+        errorDescription: newId,
+        status: 400,
+        message:'Error: Id inexistent',
+        errorContent: 'Error: Insert Id existent'
+      })
+    }
+  } catch (error: Prisma.PrismaClientKnownRequestError | any) {
+    console.log(error);
+    next({
+      errorDescription: error,
+      status: 400,
+      message:'Error: invalid Id',
+      errorContent:error.clientVersion
+    })
+  }
 }
 
 export const showAllStudents = async (
@@ -102,7 +141,7 @@ export const showStudentName = async (
 ) => {
   try {
     let { name } = req.params;
-    console.log(req.params)
+    console.log(name)
       if (typeof name === "string" && name.trim() !== "") {
       const result = await studentServices.searchName(name.trim());
       console.log(result)

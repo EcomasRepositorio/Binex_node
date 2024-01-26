@@ -4,6 +4,28 @@ import { updateStudentPick } from "../utils/format.server";
 import { StudentData } from "../utils/format.server";
 
 export class studentServices {
+  static async getStudent(id: Student["id"]) {
+    try {
+      const result = await prisma.student.findUnique({
+        where: { id },
+        select: {
+          documentNumber: true,
+          name: true,
+          code: true,
+          activityAcademy: true,
+          participation: true,
+          institute: true,
+          hour: true,
+          date: true,
+          imageCertificate: true,
+        }
+      });
+      if (!result) return false;
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
   static async getAll( take: number, skip: number ) {
     try {
       const result = await prisma.student.findMany({
@@ -34,6 +56,7 @@ export class studentServices {
       const result = await prisma.student.findFirst({
         where: { code },
         select: {
+          id: true,
           documentNumber: true,
           name: true,
           code: true,
@@ -59,6 +82,7 @@ export class studentServices {
           documentNumber: { equals: documentNumber }
         },
         select: {
+          id: true,
           documentNumber: true,
           name: true,
           code: true,
@@ -82,12 +106,14 @@ export class studentServices {
 
   static async searchName(name: Student["name"]) {
     try {
+      console.log(name);
       const result = await prisma.student.findMany({
         where: {
           name: { contains: name.toLowerCase() },
         },
         orderBy: { name:"asc" },
         select: {
+          id: true,
           documentNumber: true,
           name: true,
           code: true,
@@ -100,7 +126,8 @@ export class studentServices {
         },
         take: 15,
       });
-      return result;
+      console.log(result);
+      return result || [];
     } catch ( error ) {
       throw error;
     }

@@ -79,7 +79,7 @@ export const validateUpdateStudent = async(
     res.status(400).json({
       error: `Value '${institute}' not set to institute`
     });
-  } else if (typeof hour !== "number") {
+  } else if (typeof hour !== "string") {
     res.status(400).json({
       error: `Value '${hour}' not set to hour`
     });
