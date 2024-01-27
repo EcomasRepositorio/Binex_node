@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { studentServices } from "../services/students.services";
 import { paginationInfo } from '../utils/format.server';
 import { StudentData } from '../utils/format.server';
+import { prisma } from '../utils/prisma.server';
 
 interface RequestWithStudentsData extends Request {
   studentsData?: StudentData[];
@@ -232,11 +233,32 @@ export const createAllStudent = async (
     console.log(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code == "P2002") {
+        const duplicateCode = Array.isArray(error.meta?.target)
+          ? error.meta?.target.map((target: any) => target.value).filter((code: any) => typeof code === 'string')
+          : null;
+        try {
+          await prisma.logs.create({
+            data: {
+              errorDescription: "code",
+              message: "Error: Insert 'code' correct",
+              errorContent: `Error: Duplicate code - ${duplicateCode?.join(', ') || ''}`,
+            }
+          });
+        } catch (logError) {
+          console.error('Error al guardar el log:', logError);
+        }
         next ({
           errorDescription: error.meta?.target,
           status: 400,
-          message: "Error: Insert 'code' correct",
-          errorContent: "Error: Duplicate code"
+          message: `Error: Insert 'code' incorrect - Duplicate code: ${duplicateCode?.join(', ') || ''}`,
+          errorContent: null,
+        });
+      } else {
+        next({
+          errorDescription: error,
+          status: 400,
+          message: "Error: Error data incorrect...",
+          errorContent: null,
         });
       }
     } else {
@@ -244,7 +266,7 @@ export const createAllStudent = async (
         errorDescription: error,
         status: 400,
         message: "Error: Data incorrect",
-        errorContent: error.clientVersion
+        errorContent: null,
       });
     }
   }
