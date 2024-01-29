@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { removeUser, showAllUser,updateUser } from "../controllers/user.controllers";
+import { removeUser, showAllUser,showUser,updateUser } from "../controllers/user.controllers";
 import { authenticate } from "../middlewares/auth.middlewares";
 import { adminRole } from "../middlewares/role.middlewares";
 
 export const userRoute = Router();
 
-userRoute.get("/users", authenticate, adminRole, showAllUser)
-userRoute.put("/user/:id", authenticate, adminRole, updateUser)
+userRoute.get("/user/:id", showUser)
+userRoute.get("/users", showAllUser)
+userRoute.put("/user/:id", adminRole, updateUser)
 userRoute.delete("/user/:id", authenticate, adminRole, removeUser)

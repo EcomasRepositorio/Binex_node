@@ -1,4 +1,4 @@
-import { User, Post, Student, Prisma, Role } from "@prisma/client"
+import { User, Post, Student, Prisma } from "@prisma/client"
 
 export type userPick = Pick<
   User,
@@ -30,6 +30,7 @@ export type createPostPick = Pick<
 
 export type updateUserPick = Pick<
   User,
+  | "email"
   | "firstName"
   | "lastName"
   | "phone"
@@ -95,3 +96,27 @@ export type StudentData = {
   date: string;
   imageCertificate: string | null;
 };
+
+type Role = 'ADMIN' | 'USER';
+
+export interface UserRole {
+  id?: number;
+  active?: boolean;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone?: string; // Cambiado de string a number según la definición de Prisma
+  role: Role;
+  token?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface UserUpdate {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  role?: Role;
+}

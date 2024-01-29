@@ -3,6 +3,22 @@ import { Prisma } from "../utils/prisma.server";
 import { userServices } from "../services/user.services";
 import { paginationInfo } from "../utils/format.server";
 
+export const showUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const convertId = parseInt(id);
+    if (typeof convertId === "number" && convertId >= 0) {
+      const result = await userServices.getUser(convertId);
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 export const showAllUser = async (
     req: Request,
     res: Response,
@@ -42,8 +58,15 @@ export const showAllUser = async (
         })
       }
     } catch (error: any) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        //console.log(error);
+      console.log(error);
+      if (error.message === "La propiedad 'role' en el objeto 'data' es undefined.") {
+        // Devuelve una respuesta específica para el caso de 'role' undefined
+        res.status(400).json({ error: "La propiedad 'role' en el objeto 'data' es undefined." });
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // Manejo específico para errores de Prisma, si es necesario
+      } else {
+        // Manejo genérico para otros errores
+        res.status(400).json({ error: "Error desconocido al actualizar el usuario." });
       }
     }
   };

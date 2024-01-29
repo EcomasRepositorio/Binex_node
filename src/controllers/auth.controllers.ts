@@ -28,6 +28,8 @@ export const registerUser = async (
           message: "Error: Email existente",
           errorContent: "Error: Duplicate email"
         });
+      } else {
+        res.status(400).json(error);
       }
     } else {
       res.status(400).json(error);
