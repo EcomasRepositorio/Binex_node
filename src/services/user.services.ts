@@ -62,7 +62,9 @@ export class userServices {
         phone,
         role,
       } = data;
-      if (role !== undefined) {
+      if (role === undefined) {
+        throw new Error('La propiedad "role" en el objeto es undefined.');
+      }
       const result = await prisma.user.update({
         where: { id },
         data: {
@@ -74,10 +76,7 @@ export class userServices {
         }
       });
       return result;
-    } else {
-      throw new Error('La propiedad en el objeto es undefined.')
-    }
-    } catch (error) {
+    }catch (error) {
       throw error;
     }
   }

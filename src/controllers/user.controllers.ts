@@ -47,26 +47,27 @@ export const showAllUser = async (
       const { id } = req.params;
       const data = req.body;
       const convertId = parseInt(id);
-      if (typeof convertId === "number" && convertId >= 0) {
-        const result = await userServices.updateUser(data, convertId)
-        res.status(200).json(result);
-      } else {
-        next({
+      if (typeof convertId !== "number" || convertId < 0) {
+        return next({
           status: 400,
           message: "Invalid Id",
           errorContent: "Insert a valid Id",
-        })
+        });
       }
+      if (!data || data.role === undefined) {
+        return next({
+          status: 400,
+          message: "Invalid data. Role is missing.",
+          errorContent: "Role is required for the update.",
+        });
+      }
+      const result = await userServices.updateUser(data, convertId)
+      res.status(200).json(result);
     } catch (error: any) {
       console.log(error);
-      if (error.message === "La propiedad 'role' en el objeto 'data' es undefined.") {
-        // Devuelve una respuesta específica para el caso de 'role' undefined
-        res.status(400).json({ error: "La propiedad 'role' en el objeto 'data' es undefined." });
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Manejo específico para errores de Prisma, si es necesario
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
       } else {
-        // Manejo genérico para otros errores
-        res.status(400).json({ error: "Error desconocido al actualizar el usuario." });
+        res.status(500).json({ error: "Error desconocido al actualizar el usuario." });
       }
     }
   };
