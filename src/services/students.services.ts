@@ -109,7 +109,10 @@ export class studentServices {
       console.log(name);
       const result = await prisma.student.findMany({
         where: {
-          name: { contains: name.toLowerCase() },
+          name: {
+            contains: name,
+            mode: 'insensitive'
+          },
         },
         orderBy: { name:"asc" },
         select: {
