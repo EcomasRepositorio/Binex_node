@@ -20,14 +20,14 @@ import excelUpload from '../middlewares/excel.middlewares';
 
 export const studentRoute = Router();
 
-studentRoute.get("/show/student/:id", showStudent)
-studentRoute.get("/students", showAllStudents)
+studentRoute.get("/show/student/:id", authenticate, userRole, showStudent)
+studentRoute.get("/students",authenticate, showAllStudents)
 studentRoute.get("/student/code/:code/type/:type", showStudentCode)
 studentRoute.get("/student/dni/:documentNumber/type/:type", showStudentDNI)
 studentRoute.get("/student/name/:name/type/:type", showStudentName)
-studentRoute.post("/student", imageUpload, validateCreateStudents, createStudent)
-studentRoute.post("/students/many", excelUpload, createAllStudent, (req, res) => {
+studentRoute.post("/student",authenticate, userRole, imageUpload, validateCreateStudents, createStudent)
+studentRoute.post("/students/many",authenticate, userRole, excelUpload, createAllStudent, (req, res) => {
   res.json({ message: 'Archivo Excel procesado correctamente'})
 })
-studentRoute.put("/student/:id", imageUpload, validateUpdateStudent, updateStudent)
-studentRoute.delete("/delete/student/:id", deleteStudent)
+studentRoute.put("/student/:id",authenticate, userRole, imageUpload, validateUpdateStudent, updateStudent)
+studentRoute.delete("/delete/student/:id",authenticate, userRole, deleteStudent)

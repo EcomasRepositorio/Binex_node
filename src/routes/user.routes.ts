@@ -5,7 +5,7 @@ import { adminRole } from "../middlewares/role.middlewares";
 
 export const userRoute = Router();
 
-userRoute.get("/user/:id", showUser)
-userRoute.get("/users", showAllUser)
-userRoute.put("/user/:id", updateUser)
-userRoute.delete("/user/:id", removeUser)
+userRoute.get("/user/:id", authenticate, adminRole, showUser)
+userRoute.get("/users", authenticate, adminRole, showAllUser)
+userRoute.put("/user/:id", authenticate, adminRole, updateUser)
+userRoute.delete("/user/:id", authenticate, adminRole, removeUser)
