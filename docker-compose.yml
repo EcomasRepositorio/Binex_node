@@ -1,14 +1,27 @@
-version: '3.8'
+version: "3.9"
 services:
-  postgres:
-    image: postgres:10.3
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cimade-backend
     restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-    volumes:
-      - postgres:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
-volumes:
-  postgres:
+      - "8000:8000"
+    environment:
+      NODE_ENV: production
+      # Otras variables de entorno necesarias para tu aplicación
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    container_name: postgrest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: binex
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - ./data:/var/lib/postgresql/data

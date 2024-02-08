@@ -1,4 +1,4 @@
-import multer, { Multer, FileFilterCallback } from 'multer';
+/* import multer, { Multer, FileFilterCallback } from 'multer';
 import { Request } from 'express';
 
 const excelFilter = (
@@ -29,4 +29,4 @@ const storage = multer.diskStorage({
 
 const uploadFile: Multer = multer({ storage, fileFilter: excelFilter });
 
-export default uploadFile;
+export default uploadFile; */

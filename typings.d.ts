@@ -1,2 +1,2 @@
 
-declare const __basedir: string;
+/* declare const __basedir: string; */

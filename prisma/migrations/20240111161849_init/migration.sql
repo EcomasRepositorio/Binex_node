@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Student" ALTER COLUMN "code" SET DATA TYPE TEXT,
-ALTER COLUMN "hour" DROP NOT NULL;

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+/* import { Request, Response } from 'express';
 import db from '../../models';
 const Tutorial = db.tutorials;
 
@@ -70,3 +70,4 @@ export default {
 };
 
 //https://www.bezkoder.com/node-js-upload-excel-file-database/
+ */
